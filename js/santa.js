@@ -1,16 +1,16 @@
-/* Author: Jason Benford
+/* Author: Jason Amador
  * Title: santa.js
  * Info: pixi.js rendered browser game built for santa.com
  * */
 
-//global constants
-var viewWidth = 800;
-var viewHeight = 600;
-var fps = 30;
-var dt = 1 / fps;			//constant timestep
-var gravity = -175;			//pixels/sec/sec
-var gameTimer;
-var scrollSpeed = 1.0;
+// global constants
+const viewWidth = 800;
+const viewHeight = 600;
+const fps = 30;
+const dt = 1 / fps;			// constant timestep
+const gravity = (-175);			// pixels/sec/sec
+let gameTimer;
+const scrollSpeed = 1.0;
 
 //set up pixi
 var stage = new PIXI.Stage(0xFFFFFF);
@@ -18,7 +18,7 @@ var renderer;
 var isMobile = Boolean(navigator.userAgent.match(/phone|mobile|droid|opera mini/i));
 if (isMobile)
 	renderer = new PIXI.CanvasRenderer(viewWidth, viewHeight);
-else 
+else
 	renderer = new PIXI.autoDetectRenderer(viewWidth, viewHeight);
 renderer.view.className = "santaGame";
 document.body.appendChild(renderer.view);
@@ -295,16 +295,16 @@ function createLayers() {
 	layers = [];
 	for (i = 0; i < 4; ++i)
 		layers[i] = new PIXI.DisplayObjectContainer();
-	
+
 	layers[0].addChild(background.sprite1);
 	layers[0].addChild(background.sprite2);
 
 	for (i = 0; i < snowflakes.length; ++i)
 		layers[Math.floor(3 * (1 - snowflakes[i].depth)) + 1].addChild(snowflakes[i].sprite);
-	
+
 	for (i = 0; i < trees.length; ++i)
 		layers[Math.floor(2 * (1 - trees[i].depth)) + 2].addChild(trees[i].sprite);
-	
+
 	layers[2].addChild(santa.sprite);
 
 	layers[3].addChild(score.text);
