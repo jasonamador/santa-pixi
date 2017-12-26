@@ -92,21 +92,23 @@ function Gift(x, y, vx, vy) {
   this.sprite.y = this.y;
   this.sprite.interactive = this.sprite.buttonMode = true;
   this.sprite.mousedown = this.sprite.touchstart = function() {
-    layers[this.layerIndex].removeChild(this);
-    gifts.splice(gifts.indexOf(this.par), 1);
-    if (gifts.dropRate < 2.5)
-      gifts.dropRate *= 1.05;
-    if (santa.dTheta < 2)
-      santa.dTheta *= 1.05;
-    score.consecutive++;
-    score.score += Math.floor(Math.sqrt(this.par.vx * this.par.vx + this.par.vy * this.par.vy) * score.consecutive / 10);
-    score.text.setText("Score: " + score.score);
-    if (health.health < 1.0)
-      health.health += 0.1;
-    if (health.health > 1.0)
-      health.health = 1.0;
-    health.update();
-    scrollSpeed *= 1.1;
+		if (gameOn) {
+	    layers[this.layerIndex].removeChild(this);
+	    gifts.splice(gifts.indexOf(this.par), 1);
+	    if (gifts.dropRate < 2.5)
+	      gifts.dropRate *= 1.05;
+	    if (santa.dTheta < 2)
+	      santa.dTheta *= 1.05;
+	    score.consecutive++;
+	    score.score += Math.floor(Math.sqrt(this.par.vx * this.par.vx + this.par.vy * this.par.vy) * score.consecutive / 10);
+	    score.text.setText("Score: " + score.score);
+	    if (health.health < 1.0)
+	      health.health += 0.1;
+	    if (health.health > 1.0)
+	      health.health = 1.0;
+	    health.update();
+	    scrollSpeed *= 1.1;
+		}
   }
 
   this.update = function() {
