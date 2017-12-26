@@ -4,53 +4,8 @@
  * */
 
  /*
- Classes
+  "Class"es
  */
-
-// global constants
-const viewWidth = 800;
-const viewHeight = 600;
-const fps = 30;
-const dt = 1 / fps; // constant timestep
-const gravity = (-175); // pixels/sec/sec
-
-// global variables
-let gameOn = true;
-let gameTimer;
-let scrollSpeed = 1.0;
-
-// set up pixi
-var stage = new PIXI.Stage(0xFFFFFF);
-var renderer;
-var isMobile = Boolean(navigator.userAgent.match(/phone|mobile|droid|opera mini/i));
-if (isMobile)
-  renderer = new PIXI.CanvasRenderer(viewWidth, viewHeight);
-else
-  renderer = new PIXI.autoDetectRenderer(viewWidth, viewHeight);
-renderer.view.className = "santaGame";
-document.getElementById('container').appendChild(renderer.view);
-
-// wire the rest of the DOM
-$('#submit').on('click', (e) => {
-	e.preventDefault();
-
-	$.ajax({
-		url: '/highscores',
-		type: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify({name: $('#name').val(), score: score.score}),
-	}).then(() => {
-		restartGame();
-	}).catch((e) => {
-		console.log(e);
-	});
-});
-
-$('#tryAgain').on('click', (e) => {
-	restartGame();
-});
-
-// GAME OBJECT CONSTRUCTORS
 // santa
 function Santa() {
   this.sprite = new PIXI.Sprite.fromImage("images/santa.png");
@@ -243,56 +198,58 @@ function Health() {
   }
 }
 
+// global constants
+const viewWidth = 800;
+const viewHeight = 600;
+const fps = 60;
+const dt = 1 / fps; // constant timestep
+const gravity = (-175); // pixels/sec/sec
+// PIXI
+const stage = new PIXI.Stage(0xFFFFFF);
+let isMobile = Boolean(navigator.userAgent.match(/phone|mobile|droid|opera mini/i));
+const renderer = isMobile ? new PIXI.CanvasRenderer(viewWidth, viewHeight) : new PIXI.autoDetectRenderer(viewWidth, viewHeight);
+renderer.view.className = "santaGame";
+document.getElementById('container').appendChild(renderer.view);
+
+// global variables
+let gameOn = true;
+let gameTimer;
+let scrollSpeed = 1.0;
 let background, santa, gifts, snowflakes, trees, score, health;
 let backgroundTexture, santaTexture, giftTextures, snowflakeTextures, treeTexture;
 let layers;
+/*
+I DO NOT LIKE - RESEARCH
+I should be able to somehow pass these through or something, I don't want them to be global
+*/
+let snowFiles = [];
+let giftFiles;
 
-// start loading up assets with a loading message
-var loadingText = new PIXI.Text("Loading");
-loadingText.anchor.x = 0.5;
-loadingText.x = viewWidth / 2;
-loadingText.y = viewHeight / 2;
-stage.addChild(loadingText);
-renderer.render(stage);
+function showLoadingMessage() {
+  let loadingText = new PIXI.Text("Loading", {
+      font: "35px Pacifico",
+      fill: "white"
+    });
+  loadingText.anchor.x = 0.5;
+  loadingText.x = viewWidth / 2;
+  loadingText.y = viewHeight / 2;
+  stage.addChild(loadingText);
+  renderer.render(stage);
+}
 
-// the webfont
-WebFontConfig = {
-  google: {
-    families: ['Pacifico::latin']
-  }
-};
-(function() {
-  var wf = document.createElement('script');
-  wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-    '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-  wf.type = 'text/javascript';
-  wf.async = 'false';
-  var s = document.getElementsByTagName('script')[0];
-  s.parentNode.insertBefore(wf, s);
-})();
+function loadAssets(onComplete) {
+  for (let i = 1; i <= 7; ++i)
+    snowFiles[i - 1] = "images/snowflakes/" + i + ".png";
+  giftFiles = ["images/gifts/blue.png", "images/gifts/green.png", "images/gifts/red.png", "images/gifts/orange.png"];
 
-// load images
-var snowFiles = [];
-for (var i = 1; i <= 7; ++i)
-  snowFiles[i - 1] = "images/snowflakes/" + i + ".png";
-var giftFiles = ["images/gifts/blue.png", "images/gifts/green.png", "images/gifts/red.png", "images/gifts/orange.png"];
-
-var assets = ["images/santa.png", "images/tree.png", "images/bg.png", "images/health-red.png", "images/health-green.png", "images/restart.png"];
-var loader = new PIXI.AssetLoader(assets.concat(snowFiles, giftFiles));
-loader.onComplete = onAssetsLoaded;
-loader.load();
-
-// launch the game
-function onAssetsLoaded() {
-  stage.removeChild(loadingText);
-  createTextures();
-  createObjects();
-  createLayers();
-  gameTimer = setInterval(gameLoop, 1000 / fps);
+  let assets = ["images/santa.png", "images/tree.png", "images/bg.png", "images/health-red.png", "images/health-green.png", "images/restart.png"];
+  let loader = new PIXI.AssetLoader(assets.concat(snowFiles, giftFiles));
+  loader.onComplete = onComplete;
+  loader.load();
 }
 
 function createTextures() {
-  var i = 0;
+  let i = 0;
   backgroundTexture = new PIXI.Texture.fromImage("images/bg.png");
   snowflakeTextures = [];
   giftTextures = [];
@@ -305,11 +262,11 @@ function createTextures() {
 }
 
 function createObjects() {
-  var i = 0;
+  let i = 0;
   background = new Background(backgroundTexture);
   snowflakes = [];
   trees = [];
-  var numSnowflakes = 80;
+  let numSnowflakes = 80;
   for (i = 0; i < numSnowflakes; ++i)
     snowflakes[i] = new Snowflake();
   for (i = 0; i < 10; ++i)
@@ -323,7 +280,7 @@ function createObjects() {
 }
 
 function createLayers() {
-  var i = 0;
+  let i = 0;
   layers = [];
   for (i = 0; i < 4; ++i)
     layers[i] = new PIXI.DisplayObjectContainer();
@@ -344,7 +301,7 @@ function createLayers() {
   layers[3].addChild(health.green);
 
   //add layers to the stage
-  for (var i = 0; i < layers.length; ++i)
+  for (let i = 0; i < layers.length; ++i)
     stage.addChild(layers[i]);
 }
 
@@ -377,7 +334,7 @@ function gameOver() {
 }
 
 function gameLoop() {
-  var i = 0;
+  let i = 0;
   //update the objects
   background.update();
   santa.update();
@@ -402,3 +359,46 @@ function gameLoop() {
   //render
   renderer.render(stage);
 }
+
+/*
+event handlers
+*/
+function submitScore(e) {
+	e.preventDefault();
+	$.ajax({
+		url: '/highscores',
+		type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({name: $('#name').val(), score: score.score}),
+	}).then(() => {
+		restartGame();
+	}).catch((e) => {
+		console.log(e);
+	});
+}
+
+/*
+initialize and launch
+*/
+function init() {
+  // wire up the DOM
+  $('#submit').on('click', submitScore);
+
+  $('#tryAgain').on('click', (e) => {
+  	restartGame();
+  });
+
+  showLoadingMessage();
+  loadAssets(() => {
+    createTextures();
+    createObjects();
+    // stage.removeChild(loadingText);
+    createLayers();
+    gameTimer = setInterval(gameLoop, 1000 / fps);
+  });
+}
+
+/*
+away we go
+*/
+$(init);
