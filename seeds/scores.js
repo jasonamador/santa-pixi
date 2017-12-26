@@ -5,16 +5,16 @@ exports.seed = function(knex, Promise) {
     .then(function () {
       // Inserts seed entries
       return knex('highscores').insert([
-        {score: 1000, name: 'Jason'},
-        {score: 2000, name: 'Jason'},
-        {score: 3000, name: 'Jason'},
-        {score: 4000, name: 'Jason'},
-        {score: 5000, name: 'Jason'},
-        {score: 6000, name: 'Jason'},
-        {score: 7000, name: 'Jason'},
-        {score: 8000, name: 'Jason'},
-        {score: 9000, name: 'Jason'},
-        {score: 10000, name: 'Jason'},
+        {score: 500, name: 'Dasher'},
+        {score: 1000, name: 'Dancer'},
+        {score: 1500, name: 'Prancer'},
+        {score: 2000, name: 'Vixen'},
+        {score: 2500, name: 'Comet'},
+        {score: 3000, name: 'Cupid'},
+        {score: 3500, name: 'Donner'},
+        {score: 4000, name: 'Blitzen'},
+        {score: 4500, name: 'Rudolph'},
+        {score: 5000, name: 'Santa'},
       ]);
     });
 };

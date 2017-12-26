@@ -3,6 +3,10 @@
  * Info: pixi.js rendered browser game built for santa.com
  * */
 
+ /*
+ Classes
+ */
+
 // global constants
 const viewWidth = 800;
 const viewHeight = 600;
