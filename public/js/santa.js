@@ -172,7 +172,7 @@ function Score() {
     fill: "white"
   });
   // I don't know why, but I have to do this.
-  this.text.setText('Score: 0');
+	this.text.setText("Score: " + this.score);
   this.text.anchor.y = 0.5;
   this.text.anchor.x = 0;
   this.text.x = viewWidth / 12;
@@ -365,11 +365,12 @@ event handlers
 */
 function submitScore(e) {
 	e.preventDefault();
+  let name = $('#name').val().substring(0, 10);
 	$.ajax({
 		url: '/highscores',
 		type: 'POST',
     contentType: 'application/json',
-    data: JSON.stringify({name: $('#name').val(), score: score.score}),
+    data: JSON.stringify({name, score: score.score}),
 	}).then(() => {
 		restartGame();
 	}).catch((e) => {
@@ -377,9 +378,6 @@ function submitScore(e) {
 	});
 }
 
-/*
-initialize and launch
-*/
 function init() {
   // wire up the DOM
   $('#submit').on('click', submitScore);
